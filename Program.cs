@@ -9,21 +9,22 @@ namespace CS.Interop.Study
         static void Main(string[] args)
         {
             //  step 2
+            //  since the structs are value types, we need to pass the struct as ref
             var time = new WindowsTime();
-            GetSystemTime(time);
+            GetSystemTime(ref time);
 
             Console.WriteLine($"Windows Time is: {time.Day}-{time.Month}-{time.Year}");
         }
 
         //  Passing a struct to an unmanaged method
         [DllImport("kernel32.dll")]
-        static extern void GetSystemTime(WindowsTime wt);
+        static extern void GetSystemTime(ref WindowsTime wt);
     }
 
     //  To call GetSystemTime, we define a .NET class (or struct) that matches the C-struct it expects
     //  The order is important as it works with sequential layout. Field names are irrelevant, but the order matters!
     [StructLayout(LayoutKind.Sequential)]
-    class WindowsTime
+    struct WindowsTime
     {
         public ushort Year;
         public ushort Month;
