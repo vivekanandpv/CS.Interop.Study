@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace CS.Interop.Study
 {
@@ -6,14 +7,14 @@ namespace CS.Interop.Study
     {
         static void Main(string[] args)
         {
-            //  Interop means interoperations with either OS (Win32 API or Linux or Unix)
-            //  or COM (only on Windows)
-
-            //  This is facilitated by pinvoke which allows us to access functions, structs,
-            //  and callbacks in unmanaged DLLs (or shared libraries in Unix)
-
-            //  For the list of API documentation, please refer to:
-            //  http://pinvoke.net/
+            //  step 2
+            MessageBox(IntPtr.Zero, "Hello, world!", "Win32 API Interop", 0);
         }
+
+        //  step 1
+        //  define a static extern method with the same signature as the Win32 API
+        //  Then apply DllImport attribute
+        [DllImport("user32.dll")]
+        static extern int MessageBox(IntPtr hWnd, string text, string caption, int type);
     }
 }
