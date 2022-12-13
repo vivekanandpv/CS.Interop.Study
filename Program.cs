@@ -9,23 +9,29 @@ namespace CS.Interop.Study
         static void Main(string[] args)
         {
             //  step 2
-            //  This is low-level access. Consider StringBuilder for normal use cases.
+            var time = new WindowsTime();
+            GetSystemTime(time);
 
-            var charArray = new char[256];
-            int charsWritten = GetWindowsDirectory(charArray, 256);
-
-            string winDirName = new string(charArray, 0, charsWritten);
-
-            Console.WriteLine($"Windows Directory is: {winDirName}; API has written: {charsWritten} characters to the StringBuilder");
+            Console.WriteLine($"Windows Time is: {time.Day}-{time.Month}-{time.Year}");
         }
 
-        //  step 1
-        //  define a static extern method with the same signature as the Win32 API
-        //  Then apply DllImport attribute
-        //  Without CharSet it doesn't work.
-        //  Auto and Unicode work the same.
-        //  Ansi, doesn't work at least in Windows 11.
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        static extern int GetWindowsDirectory(char[] arr, int maxChars);
+        //  Passing a struct to an unmanaged method
+        [DllImport("kernel32.dll")]
+        static extern void GetSystemTime(WindowsTime wt);
+    }
+
+    //  To call GetSystemTime, we define a .NET class (or struct) that matches the C-struct it expects
+    //  The order is important as it works with sequential layout. Field names are irrelevant, but the order matters!
+    [StructLayout(LayoutKind.Sequential)]
+    class WindowsTime
+    {
+        public ushort Year;
+        public ushort Month;
+        public ushort DayOfWeek;
+        public ushort Day;
+        public ushort Hour;
+        public ushort Minute;
+        public ushort Second;
+        public ushort Milliseconds;
     }
 }
