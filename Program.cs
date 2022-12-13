@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace CS.Interop.Study
 {
@@ -8,13 +9,16 @@ namespace CS.Interop.Study
         static void Main(string[] args)
         {
             //  step 2
-            MessageBox(IntPtr.Zero, "Hello, world!", "Win32 API Interop", 0);
+            StringBuilder sb = new StringBuilder(256);
+            int charsWritten = GetWindowsDirectory(sb, 256);
+
+            Console.WriteLine($"Windows Directory is: {sb}; API has written: {charsWritten} characters to the StringBuilder");
         }
 
         //  step 1
         //  define a static extern method with the same signature as the Win32 API
         //  Then apply DllImport attribute
-        [DllImport("user32.dll")]
-        static extern int MessageBox(IntPtr hWnd, string text, string caption, int type);
+        [DllImport("kernel32.dll")]
+        static extern int GetWindowsDirectory(StringBuilder sb, int maxChars);
     }
 }
