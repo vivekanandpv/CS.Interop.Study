@@ -9,16 +9,23 @@ namespace CS.Interop.Study
         static void Main(string[] args)
         {
             //  step 2
-            StringBuilder sb = new StringBuilder(256);
-            int charsWritten = GetWindowsDirectory(sb, 256);
+            //  This is low-level access. Consider StringBuilder for normal use cases.
 
-            Console.WriteLine($"Windows Directory is: {sb}; API has written: {charsWritten} characters to the StringBuilder");
+            var charArray = new char[256];
+            int charsWritten = GetWindowsDirectory(charArray, 256);
+
+            string winDirName = new string(charArray, 0, charsWritten);
+
+            Console.WriteLine($"Windows Directory is: {winDirName}; API has written: {charsWritten} characters to the StringBuilder");
         }
 
         //  step 1
         //  define a static extern method with the same signature as the Win32 API
         //  Then apply DllImport attribute
-        [DllImport("kernel32.dll")]
-        static extern int GetWindowsDirectory(StringBuilder sb, int maxChars);
+        //  Without CharSet it doesn't work.
+        //  Auto and Unicode work the same.
+        //  Ansi, doesn't work at least in Windows 11.
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        static extern int GetWindowsDirectory(char[] arr, int maxChars);
     }
 }
